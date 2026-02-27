@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>실무용 퇴직금 시뮬레이터</title>
+    <style>
+      :root { font-family: "Pretendard", "Noto Sans KR", system-ui, sans-serif; }
+      body { margin: 0; background: #f4f6fb; color: #1f2937; }
+      .wrap { max-width: 1024px; margin: 40px auto; padding: 20px; }
+      .card { background: #fff; border-radius: 16px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06); padding: 20px; }
+      h1 { margin: 0 0 8px 0; }
+      .desc { margin: 0 0 20px 0; color: #4b5563; }
+      .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .field { display: grid; gap: 8px; }
+      select, button { padding: 11px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 15px; }
+      .toggle { display: flex; gap: 8px; align-items: center; }
+      .run { margin-top: 14px; background: #2563eb; color: #fff; border: none; cursor: pointer; font-weight: 700; }
+      .run:hover { background: #1d4ed8; }
+      .result { margin-top: 16px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 14px; }
+      .sub { margin-top: 4px; color: #334155; font-size: 14px; }
+      pre { margin-top: 18px; background: #0f172a; color: #e2e8f0; border-radius: 12px; padding: 12px; max-height: 300px; overflow: auto; }
+      table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+      th, td { border-bottom: 1px solid #e5e7eb; padding: 10px; text-align: left; }
+      th { background: #f8fafc; }
+      @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="card">
+        <h1>실무용 퇴직금 시뮬레이터</h1>
+        <p class="desc">정확성/재현성/감사 대응을 위한 모듈형 계산기 (근속, 평균임금, 퇴직금 분리 엔진)</p>
+
+        <div class="grid">
+          <div class="field">
+            <label for="employeeSelect">직원 선택 (샘플 3명)</label>
+            <select id="employeeSelect"></select>
+          </div>
+          <div class="field">
+            <label>옵션</label>
+            <label class="toggle"><input type="checkbox" id="leaveCorrectionToggle" /> 휴직 보정 적용</label>
+            <label class="toggle"><input type="checkbox" id="allowanceToggle" checked /> 수당 포함</label>
+          </div>
+        </div>
+
+        <button id="runButton" class="run" type="button">시뮬레이션 실행</button>
+
+        <div id="result" class="result"></div>
+
+        <h2>중간 산식 로그</h2>
+        <pre id="calcLogs" aria-live="polite"></pre>
+
+        <h2>시나리오 비교표 (기본 / 휴직보정 / 임금피크)</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>시나리오</th>
+              <th>평균월임금</th>
+              <th>근속연수</th>
+              <th>퇴직금</th>
+            </tr>
+          </thead>
+          <tbody id="scenarioRows"></tbody>
+        </table>
+      </section>
+    </main>
+    <script type="module" src="./src/index.js"></script>
+  </body>
+</html>
