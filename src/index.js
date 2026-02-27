@@ -20,6 +20,10 @@ const employeeMeta = document.getElementById('employeeMeta');
 const leaveRows = document.getElementById('leaveRows');
 const payrollRows = document.getElementById('payrollRows');
 
+const installAppButton = document.getElementById('installAppButton');
+const appStatus = document.getElementById('appStatus');
+let deferredInstallPrompt = null;
+
 const formatter = new Intl.NumberFormat('ko-KR');
 
 function monthToNumber(month) {
@@ -196,4 +200,48 @@ renderEmployeeOptions();
 employeeSelect.addEventListener('change', runSimulation);
 runButton.addEventListener('click', runSimulation);
 copyLogsButton.addEventListener('click', copyLogs);
+installAppButton.addEventListener('click', installApp);
+setupPwaMode();
 runSimulation();
+
+
+function setupPwaMode() {
+  if (!('serviceWorker' in navigator)) {
+    appStatus.textContent = '이 브라우저는 앱 모드를 지원하지 않습니다.';
+    return;
+  }
+
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    installAppButton.hidden = false;
+    appStatus.textContent = '설치 가능한 앱입니다. "앱 설치"를 눌러주세요.';
+  });
+
+  window.addEventListener('appinstalled', () => {
+    installAppButton.hidden = true;
+    appStatus.textContent = '앱 설치가 완료되었습니다.';
+  });
+
+  navigator.serviceWorker
+    .register('./service-worker.js')
+    .then(() => {
+      appStatus.textContent = window.matchMedia('(display-mode: standalone)').matches
+        ? '설치된 앱 모드(Standalone)로 실행 중입니다.'
+        : '웹 모드로 실행 중입니다. 설치 시 앱처럼 사용 가능합니다.';
+    })
+    .catch(() => {
+      appStatus.textContent = '앱 모드 초기화에 실패했습니다.';
+    });
+}
+
+async function installApp() {
+  if (!deferredInstallPrompt) {
+    appStatus.textContent = '현재 브라우저에서는 수동 설치(브라우저 메뉴)를 사용해주세요.';
+    return;
+  }
+
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+}
